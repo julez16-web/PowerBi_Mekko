@@ -1,0 +1,42 @@
+/**
+ * Styles for the Mekko Chart visual.
+ * Kept minimal; most styling is inline via D3 for Power BI compatibility.
+ */
+
+.mekko-container {
+    font-family: "Segoe UI", "wf_segoe-ui_normal", helvetica, arial, sans-serif;
+
+    .segment-label {
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .bar-total-label {
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .axis-label {
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .mekko-bar rect {
+        cursor: pointer;
+        transition: opacity 0.15s ease;
+
+        &:hover {
+            opacity: 0.85;
+        }
+
+        &:focus {
+            outline: 2px solid #0078d4;
+            outline-offset: 1px;
+        }
+    }
+
+    .mekko-legend text {
+        user-select: none;
+        -webkit-user-select: none;
+    }
+}

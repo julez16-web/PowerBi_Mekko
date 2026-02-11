@@ -1,0 +1,39 @@
+{
+  "name": "powerbi-mekko-chart",
+  "version": "1.0.0",
+  "description": "Marimekko / Mekko chart custom visual for Power BI with advanced labeling",
+  "main": "src/visual.ts",
+  "scripts": {
+    "pbiviz": "pbiviz",
+    "start": "pbiviz start",
+    "package": "pbiviz package",
+    "lint": "eslint src/**/*.ts",
+    "build": "webpack --mode production"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^7.9.0",
+    "powerbi-models": "^1.13.1",
+    "powerbi-visuals-api": "~5.11.0",
+    "powerbi-visuals-utils-colorutils": "^6.0.2",
+    "powerbi-visuals-utils-dataviewutils": "^6.0.2",
+    "powerbi-visuals-utils-formattingutils": "^6.0.2",
+    "powerbi-visuals-utils-tooltiputils": "^6.0.2",
+    "powerbi-visuals-utils-typeutils": "^6.0.2"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "css-loader": "^7.1.2",
+    "eslint": "^8.57.0",
+    "less": "^4.2.0",
+    "less-loader": "^12.2.0",
+    "mini-css-extract-plugin": "^2.9.0",
+    "powerbi-visuals-tools": "^5.5.0",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
