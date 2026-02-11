@@ -52,9 +52,7 @@ export interface LabelCalculationContext {
 
 export class LabelCalculations {
     /**
-     * Calculate the label text based on the content mode.
-     * Uses valueOriginal (the raw data value) for amount display,
-     * NOT valueAbsolute which is normalized in 100%-stacked mode.
+     * Calculate the label text based on the content mode
      */
     public static calculateLabelText(
         context: LabelCalculationContext,
@@ -71,9 +69,7 @@ export class LabelCalculations {
             formatString
         } = context;
 
-        // Use valueOriginal for absolute amounts (raw data value),
-        // NOT valueAbsolute which is normalized (0..1) in 100%-stacked mode
-        const amount = Math.abs(dataPoint.valueOriginal ?? dataPoint.valueAbsolute ?? dataPoint.value ?? 0);
+        const amount = dataPoint.valueAbsolute || dataPoint.value;
         const percentTotal = grandTotal > 0 ? (amount / grandTotal) * 100 : 0;
         const percentBar = barTotal > 0 ? (amount / barTotal) * 100 : 0;
 
@@ -86,9 +82,9 @@ export class LabelCalculations {
         });
 
         const percentFormatter = valueFormatter.create({
-            format: "0.0\\%",
+            format: "0.##\\%",
             value: 1,
-            precision: Math.max(precision, 1)
+            precision: precision
         });
 
         switch (contentMode) {

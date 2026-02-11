@@ -1450,8 +1450,7 @@ export class BaseColumnChart implements IColumnChart {
             dataPoints,
             behaviorOptions,
             labelDataPoints: chartDrawInfo.labelDataPoints,
-            labelsAreNumeric: true,
-            barTotalDataPoints: chartDrawInfo.barTotalDataPoints
+            labelsAreNumeric: true
         };
     }
 

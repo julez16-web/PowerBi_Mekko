@@ -304,7 +304,6 @@ export interface MekkoVisualRenderResult {
     behaviorOptions: VisualBehaviorOptions;
     labelDataPoints: LabelDataPoint[];
     labelsAreNumeric: boolean;
-    barTotalDataPoints?: BarTotalDataPoint[];
 }
 
 export interface MekkoCalculateScaleAndDomainOptions {
@@ -540,7 +539,6 @@ export interface MekkoChartDrawInfo {
     viewport: IViewport;
     axisOptions: MekkoChartAxisOptions;
     labelDataPoints: LabelDataPoint[];
-    barTotalDataPoints?: BarTotalDataPoint[];
 }
 
 export interface BaseColorIdentity {
@@ -571,17 +569,6 @@ export interface IFilteredValueGroups {
     category: PrimitiveValue;
     identity: CustomVisualOpaqueIdentity;
 }
-export interface BarTotalDataPoint {
-    categoryIndex: number;
-    categoryName: string;
-    total: number;
-    grandTotal: number;
-    x: number;
-    y: number;
-    width: number;
-    text: string;
-}
-
 export class ICategoryValuesCollection extends Array<MekkoChartColumnDataPoint> {
     [index: number]: MekkoChartColumnDataPoint;
     categoryValue?: PrimitiveValue;

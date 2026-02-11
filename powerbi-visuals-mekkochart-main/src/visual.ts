@@ -73,7 +73,6 @@ import {
     Selection,
     MekkoColumnAxisOptions,
     RectDataPoint,
-    BarTotalDataPoint,
 } from "./dataInterfaces";
 
 import {
@@ -208,7 +207,6 @@ export class MekkoChart implements IVisual {
     private static DefaultDy: string = "1em";
 
     private static LabelGraphicsContextClass: ClassAndSelector = createClassAndSelector("labelGraphicsContext");
-    private static BarTotalsGraphicsContextClass: ClassAndSelector = createClassAndSelector("barTotalsGraphicsContext");
     private static BaseXAxisSelector: ClassAndSelector = createClassAndSelector("x.axis");
     private static AxisLabelSelector: ClassAndSelector = createClassAndSelector("label");
     private static LegendSelector: ClassAndSelector = createClassAndSelector("legend");
@@ -349,7 +347,6 @@ export class MekkoChart implements IVisual {
     private svgScrollable: Selection;
     private axisGraphicsContextScrollable: Selection;
     private labelGraphicsContextScrollable: Selection;
-    private barTotalsGraphicsContext: Selection;
     private brushGraphicsContext: Selection;
 
     private dataViews: DataView[];
@@ -404,10 +401,6 @@ export class MekkoChart implements IVisual {
         this.labelGraphicsContextScrollable = this.svgScrollable
             .append("g")
             .classed(MekkoChart.LabelGraphicsContextClass.className, true);
-
-        this.barTotalsGraphicsContext = this.svgScrollable
-            .append("g")
-            .classed(MekkoChart.BarTotalsGraphicsContextClass.className, true);
 
         this.xAxisGraphicsContext = this.axisGraphicsContext
             .append("g")
@@ -627,10 +620,6 @@ export class MekkoChart implements IVisual {
             manipulation.translate(margin.left, margin.top));
 
         this.labelGraphicsContextScrollable.attr(
-            "transform",
-            manipulation.translate(margin.left, margin.top));
-
-        this.barTotalsGraphicsContext.attr(
             "transform",
             manipulation.translate(margin.left, margin.top));
 
@@ -1858,7 +1847,6 @@ export class MekkoChart implements IVisual {
 
         if (this.behavior) {
             let resultsLabelDataPoints: LabelDataPoint[] = [];
-            let allBarTotalDataPoints: BarTotalDataPoint[] = [];
 
             for (let layerIndex: number = 0; layerIndex < layers.length; layerIndex++) {
                 const layerLegend: ILegendData = layers[layerIndex].calculateLegend();
@@ -1870,10 +1858,6 @@ export class MekkoChart implements IVisual {
                     layerBehaviorOptions.push(result.behaviorOptions);
 
                     resultsLabelDataPoints = resultsLabelDataPoints.concat(result.labelDataPoints);
-
-                    if (result.barTotalDataPoints) {
-                        allBarTotalDataPoints = allBarTotalDataPoints.concat(result.barTotalDataPoints);
-                    }
                 }
             }
 
@@ -1888,9 +1872,6 @@ export class MekkoChart implements IVisual {
                 hasSelection: false,
                 hideCollidedLabels: !forceDisplay
             });
-
-            // Render bar totals
-            this.renderBarTotals(allBarTotalDataPoints);
 
             this.applyOnObjectStylesToLabels(isFormatMode);
             this.applyOnObjectStylesToAxisTickText(this.y1AxisGraphicsContext, isFormatMode);
@@ -1929,40 +1910,6 @@ export class MekkoChart implements IVisual {
             .attr(SubSelectableObjectNameAttribute, MekkoChartObjectNames.Labels)
             .attr(SubSelectableTypeAttribute, SubSelectionStylesType.NumericText)
             .attr(SubSelectableDisplayNameAttribute, this.localizationManager.getDisplayName("Visual_Data_Labels"));
-    }
-
-    private renderBarTotals(barTotalDataPoints: BarTotalDataPoint[]): void {
-        // Clear previous bar totals
-        this.barTotalsGraphicsContext.selectAll("*").remove();
-
-        if (!this.settingsModel.categoryAxis.showBarTotals.value || !barTotalDataPoints || barTotalDataPoints.length === 0) {
-            return;
-        }
-
-        const fontSize = this.settingsModel.categoryAxis.barTotalFontSize?.value || 10;
-        const color = this.settingsModel.categoryAxis.barTotalColor?.value?.value || "#333333";
-
-        const labels = this.barTotalsGraphicsContext
-            .selectAll(".bar-total-label")
-            .data(barTotalDataPoints);
-
-        labels.enter()
-            .append("text")
-            .classed("bar-total-label", true)
-            .merge(labels as any)
-            .attr("x", (d: BarTotalDataPoint) => d.x)
-            .attr("y", (d: BarTotalDataPoint) => d.y)
-            .attr("text-anchor", "middle")
-            .attr("dominant-baseline", "auto")
-            .style("fill", color)
-            .style("font-size", `${fontSize}pt`)
-            .style("font-family", this.settingsModel.categoryAxis.fontControl?.fontFamily?.value || "Arial")
-            .style("pointer-events", "none")
-            .attr("role", "presentation")
-            .attr("aria-hidden", "true")
-            .text((d: BarTotalDataPoint) => d.text);
-
-        labels.exit().remove();
     }
 
     private getLabelLayout(forceDisplay: boolean = false): ILabelLayout {
