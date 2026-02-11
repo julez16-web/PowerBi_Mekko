@@ -1,0 +1,22 @@
+{
+  "visual": {
+    "name": "MekkoChart",
+    "displayName": "Enhanced Mekko Chart 4.0.0.1",
+    "guid": "MekkoChartEnhanced4001",
+    "visualClassName": "MekkoChart",
+    "version": "4.0.0.1",
+    "description": "Enhanced Mekko chart with dynamic labeling, Top-N filtering, and advanced sorting. Features flexible label content modes, automatic segment hiding, category aggregation, and configurable axes for optimal data visualization.",
+    "supportUrl": "http://community.powerbi.com",
+    "gitHubUrl": "https://github.com/Microsoft/powerbi-visuals-mekkochart"
+  },
+  "apiVersion": "5.11.0",
+  "author": {
+    "name": "Microsoft",
+    "email": "pbicvsupport@microsoft.com"
+  },
+  "assets": {
+    "icon": "assets/icon.png"
+  },
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json"
+}
