@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+.tmp
+dist
+typings
+.api
+.vscode/*
+*.log
+/coverage
+webpack.statistics.dev.html
+webpack.statistics.prod.html
