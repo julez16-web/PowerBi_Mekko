@@ -1,0 +1,201 @@
+{
+  "dataRoles": [
+    {
+      "displayName": "Category",
+      "name": "category",
+      "kind": "Grouping",
+      "description": "The category axis (e.g. Final_OH categories like PDC, MAT-OTH)"
+    },
+    {
+      "displayName": "Series",
+      "name": "series",
+      "kind": "Grouping",
+      "description": "The series / legend (e.g. Cost Element main category)"
+    },
+    {
+      "displayName": "Values",
+      "name": "values",
+      "kind": "Measure",
+      "description": "The numeric measure (e.g. absolute cost amounts)"
+    }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "category": { "max": 1 },
+          "series": { "max": 1 },
+          "values": { "max": 1 }
+        }
+      ],
+      "matrix": {
+        "rows": {
+          "for": { "in": "category" }
+        },
+        "columns": {
+          "for": { "in": "series" }
+        },
+        "values": {
+          "for": { "in": "values" }
+        }
+      }
+    }
+  ],
+  "objects": {
+    "segmentLabels": {
+      "displayName": "Segment Labels",
+      "properties": {
+        "show": {
+          "displayName": "Show Labels",
+          "type": { "bool": true }
+        },
+        "labelContentMode": {
+          "displayName": "Label Content Mode",
+          "type": {
+            "enumeration": [
+              { "value": "amount", "displayName": "Amount" },
+              { "value": "percentTotal", "displayName": "% of Total" },
+              { "value": "percentBar", "displayName": "% within Bar" },
+              { "value": "amountPercentTotal", "displayName": "Amount | % of Total" },
+              { "value": "categoryAmount", "displayName": "Category (Amount)" },
+              { "value": "categoryPercentTotal", "displayName": "Category (% of Total)" },
+              { "value": "categoryPercentBar", "displayName": "Category (% within Bar)" },
+              { "value": "categoryAmountPercentTotal", "displayName": "Category (Amount | % of Total)" }
+            ]
+          }
+        },
+        "labelPosition": {
+          "displayName": "Label Position",
+          "type": {
+            "enumeration": [
+              { "value": "inside", "displayName": "Inside" },
+              { "value": "outside", "displayName": "Outside" },
+              { "value": "centered", "displayName": "Centered" }
+            ]
+          }
+        },
+        "fontSize": {
+          "displayName": "Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "fontColor": {
+          "displayName": "Font Color",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "decimalPlaces": {
+          "displayName": "Decimal Places",
+          "type": { "numeric": true }
+        },
+        "displayUnits": {
+          "displayName": "Display Units",
+          "type": {
+            "enumeration": [
+              { "value": "auto", "displayName": "Auto" },
+              { "value": "none", "displayName": "None" },
+              { "value": "thousands", "displayName": "Thousands (k)" },
+              { "value": "millions", "displayName": "Millions (M)" },
+              { "value": "billions", "displayName": "Billions (B)" }
+            ]
+          }
+        },
+        "currencySymbol": {
+          "displayName": "Currency Symbol",
+          "type": { "text": true }
+        },
+        "minThreshold": {
+          "displayName": "Min. Segment % to Show Label",
+          "description": "Hide labels for segments smaller than this percentage of the bar",
+          "type": { "numeric": true }
+        }
+      }
+    },
+    "barTotals": {
+      "displayName": "Bar Totals",
+      "properties": {
+        "show": {
+          "displayName": "Show Bar Totals",
+          "type": { "bool": true }
+        },
+        "totalLabelFormat": {
+          "displayName": "Total Label Format",
+          "type": {
+            "enumeration": [
+              { "value": "amount", "displayName": "Amount" },
+              { "value": "amountPercentTotal", "displayName": "Amount | % of Total" }
+            ]
+          }
+        },
+        "fontSize": {
+          "displayName": "Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "fontColor": {
+          "displayName": "Font Color",
+          "type": { "fill": { "solid": { "color": true } } }
+        },
+        "decimalPlaces": {
+          "displayName": "Decimal Places",
+          "type": { "numeric": true }
+        },
+        "displayUnits": {
+          "displayName": "Display Units",
+          "type": {
+            "enumeration": [
+              { "value": "auto", "displayName": "Auto" },
+              { "value": "none", "displayName": "None" },
+              { "value": "thousands", "displayName": "Thousands (k)" },
+              { "value": "millions", "displayName": "Millions (M)" },
+              { "value": "billions", "displayName": "Billions (B)" }
+            ]
+          }
+        },
+        "currencySymbol": {
+          "displayName": "Currency Symbol",
+          "type": { "text": true }
+        }
+      }
+    },
+    "legend": {
+      "displayName": "Legend",
+      "properties": {
+        "show": {
+          "displayName": "Show Legend",
+          "type": { "bool": true }
+        },
+        "position": {
+          "displayName": "Position",
+          "type": {
+            "enumeration": [
+              { "value": "top", "displayName": "Top" },
+              { "value": "bottom", "displayName": "Bottom" },
+              { "value": "left", "displayName": "Left" },
+              { "value": "right", "displayName": "Right" }
+            ]
+          }
+        },
+        "fontSize": {
+          "displayName": "Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        }
+      }
+    },
+    "categoryAxis": {
+      "displayName": "Category Axis",
+      "properties": {
+        "show": {
+          "displayName": "Show Axis",
+          "type": { "bool": true }
+        },
+        "fontSize": {
+          "displayName": "Font Size",
+          "type": { "formatting": { "fontSize": true } }
+        },
+        "fontColor": {
+          "displayName": "Font Color",
+          "type": { "fill": { "solid": { "color": true } } }
+        }
+      }
+    }
+  },
+  "privileges": []
+}

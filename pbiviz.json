@@ -1,0 +1,24 @@
+{
+  "visual": {
+    "name": "MekkoChart",
+    "displayName": "Mekko / Marimekko Chart",
+    "guid": "MekkoChart_1A2B3C4D5E6F",
+    "visualClassName": "MekkoVisual",
+    "version": "1.0.0",
+    "description": "A Marimekko (Mekko) chart with 100%-stacked bars, variable-width columns, configurable labels (absolute amounts, percentages, category labels), and bar totals. Microsoft AppSource & certification ready.",
+    "supportUrl": "",
+    "gitHubUrl": ""
+  },
+  "apiVersion": "5.11.0",
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "assets": {
+    "icon": "assets/icon.png"
+  },
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json",
+  "dependencies": null,
+  "stringResources": []
+}
