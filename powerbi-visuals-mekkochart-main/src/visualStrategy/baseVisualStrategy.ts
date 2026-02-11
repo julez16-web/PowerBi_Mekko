@@ -64,7 +64,8 @@ import {
     IMekkoColumnLayout,
     MekkoCreateAxisOptions,
     MekkoChartData,
-    LabelDataPoint
+    LabelDataPoint,
+    BarTotalDataPoint
 } from "./../dataInterfaces";
 
 import { IVisualStrategy } from "./visualStrategy";
@@ -523,15 +524,104 @@ export class BaseVisualStrategy implements IVisualStrategy {
 
         MekkoChartUtils.applyInteractivity(shapes, this.graphicsContext.onDragStart);
 
+        // Calculate bar total data points
+        const barTotalDataPoints = this.calculateBarTotalDataPoints(settingsModel, stackedColumnLayout);
+
         return {
             axisOptions,
             labelDataPoints,
+            barTotalDataPoints,
             shapesSelection: shapes,
             viewport: {
                 height: this.height,
                 width: this.width
             }
         };
+    }
+
+    private calculateBarTotalDataPoints(
+        settingsModel: VisualFormattingSettingsModel,
+        layout: IMekkoColumnLayout
+    ): BarTotalDataPoint[] {
+        if (!settingsModel.categoryAxis.showBarTotals.value) {
+            return [];
+        }
+
+        const data = this.data;
+        if (!data || !data.series || data.series.length === 0) {
+            return [];
+        }
+
+        // Aggregate totals per category from raw values (valueOriginal)
+        const categoryTotals = new Map<number, { total: number; name: string; x: number; width: number; minY: number }>();
+
+        for (const series of data.series) {
+            for (const dp of series.data) {
+                if (dp.highlight) continue;
+                const existing = categoryTotals.get(dp.categoryIndex);
+                const dpX = layout.shapeLayout.x(dp);
+                const dpW = layout.shapeLayout.width(dp);
+                const dpY = layout.shapeLayout.y(dp);
+
+                if (existing) {
+                    existing.total += Math.abs(dp.valueOriginal ?? 0);
+                    existing.minY = Math.min(existing.minY, dpY);
+                } else {
+                    categoryTotals.set(dp.categoryIndex, {
+                        total: Math.abs(dp.valueOriginal ?? 0),
+                        name: (data.categories[dp.categoryIndex] ?? '').toString(),
+                        x: dpX,
+                        width: dpW,
+                        minY: dpY
+                    });
+                }
+            }
+        }
+
+        // Calculate grand total
+        let grandTotal = 0;
+        categoryTotals.forEach(cat => grandTotal += cat.total);
+
+        const barTotalFormat = settingsModel.categoryAxis.barTotalFormat?.value || "amount";
+        const displayUnits = +(settingsModel.categoryAxis.barTotalDisplayUnits?.value || 0);
+        const precision = settingsModel.categoryAxis.barTotalPrecision?.value ?? 0;
+
+        const amountFormatter = valueFormatter.create({
+            value: displayUnits,
+            precision: precision,
+            allowFormatBeautification: true
+        });
+
+        const percentFormatter = valueFormatter.create({
+            format: "0.0\\%",
+            value: 1,
+            precision: Math.max(precision, 1)
+        });
+
+        const result: BarTotalDataPoint[] = [];
+
+        categoryTotals.forEach((cat, catIndex) => {
+            let text: string;
+            if (barTotalFormat === "amountAndPercent") {
+                const pct = grandTotal > 0 ? (cat.total / grandTotal) : 0;
+                text = `${amountFormatter.format(cat.total)} | ${percentFormatter.format(pct)}`;
+            } else {
+                text = amountFormatter.format(cat.total);
+            }
+
+            result.push({
+                categoryIndex: catIndex,
+                categoryName: cat.name,
+                total: cat.total,
+                grandTotal: grandTotal,
+                x: cat.x + cat.width / 2,
+                y: cat.minY - 4, // slightly above the top of the bar
+                width: cat.width,
+                text: text
+            });
+        });
+
+        return result;
     }
 
     private static drawDefaultShapes(

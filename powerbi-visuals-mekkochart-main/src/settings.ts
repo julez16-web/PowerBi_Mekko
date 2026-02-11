@@ -449,6 +449,56 @@ export class CategoryAxisSettings extends FormattingSettingsSimpleCard {
         value: false
     });
 
+    public barTotalFormat = new formattingSettings.AutoDropdown({
+        name: "barTotalFormat",
+        displayNameKey: "Visual_BarTotalFormat",
+        value: "amount"
+    });
+
+    public barTotalDisplayUnits = new formattingSettings.AutoDropdown({
+        name: "barTotalDisplayUnits",
+        displayNameKey: "Visual_Display_Units",
+        value: 0
+    });
+
+    public barTotalPrecision = new formattingSettings.NumUpDown({
+        name: "barTotalPrecision",
+        displayNameKey: "Visual_Decimal_Places",
+        value: 0,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 0,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 4,
+            }
+        }
+    });
+
+    public barTotalColor = new formattingSettings.ColorPicker({
+        name: "barTotalColor",
+        displayNameKey: "Visual_BarTotalColor",
+        value: { value: "#333333" }
+    });
+
+    public barTotalFontSize = new formattingSettings.NumUpDown({
+        name: "barTotalFontSize",
+        displayNameKey: "Visual_Font_Size",
+        value: 10,
+        options: {
+            minValue: {
+                type: powerbi.visuals.ValidatorType.Min,
+                value: 6,
+            },
+            maxValue: {
+                type: powerbi.visuals.ValidatorType.Max,
+                value: 30,
+            }
+        }
+    });
+
     public labelColor = new formattingSettings.ColorPicker({
         name: "labelColor",
         displayNameKey: "Visual_Color",
@@ -504,6 +554,11 @@ export class CategoryAxisSettings extends FormattingSettingsSimpleCard {
         this.showOtherCategory,
         this.otherCategoryLabel,
         this.showBarTotals,
+        this.barTotalFormat,
+        this.barTotalDisplayUnits,
+        this.barTotalPrecision,
+        this.barTotalColor,
+        this.barTotalFontSize,
         this.labelColor,
         this.fontControl
     ];
@@ -849,6 +904,21 @@ export class VisualFormattingSettingsModel extends FormattingSettingsModel {
             this.labels.position.visible = false;
             this.labels.autoHideSmallSegments.visible = false;
             this.labels.minSegmentThreshold.visible = false;
+        }
+
+        // Show/hide Bar Total related settings
+        if (this.categoryAxis.showBarTotals.value) {
+            this.categoryAxis.barTotalFormat.visible = true;
+            this.categoryAxis.barTotalDisplayUnits.visible = true;
+            this.categoryAxis.barTotalPrecision.visible = true;
+            this.categoryAxis.barTotalColor.visible = true;
+            this.categoryAxis.barTotalFontSize.visible = true;
+        } else {
+            this.categoryAxis.barTotalFormat.visible = false;
+            this.categoryAxis.barTotalDisplayUnits.visible = false;
+            this.categoryAxis.barTotalPrecision.visible = false;
+            this.categoryAxis.barTotalColor.visible = false;
+            this.categoryAxis.barTotalFontSize.visible = false;
         }
 
         // Show/hide Top-N related settings

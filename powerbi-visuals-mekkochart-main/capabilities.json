@@ -427,6 +427,49 @@
                         "bool": true
                     }
                 },
+                "barTotalFormat": {
+                    "type": {
+                        "enumeration": [
+                            {
+                                "value": "amount",
+                                "displayName": "Amount",
+                                "displayNameKey": "Visual_BarTotal_Amount"
+                            },
+                            {
+                                "value": "amountAndPercent",
+                                "displayName": "Amount | % Total",
+                                "displayNameKey": "Visual_BarTotal_AmountAndPercent"
+                            }
+                        ]
+                    }
+                },
+                "barTotalDisplayUnits": {
+                    "type": {
+                        "formatting": {
+                            "labelDisplayUnits": true
+                        }
+                    },
+                    "suppressFormatPainterCopy": true
+                },
+                "barTotalPrecision": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "barTotalColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "barTotalFontSize": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "labelColor": {
                     "type": {
                         "fill": {
