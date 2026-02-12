@@ -195,47 +195,108 @@ export class MekkoVisual implements powerbi.extensibility.visual.IVisual {
 
         const labelText = buildSegmentLabel(segment, bar, settings);
         const fontSize = settings.fontSize;
+        const labelX = x + width / 2;
+        const maxWidth = width - 4;
 
-        // Position based on setting
-        let labelY: number;
-        let dominantBaseline: string;
-        switch (settings.labelPosition) {
-            case "outside":
-                labelY = y - 2;
-                dominantBaseline = "auto";
-                break;
-            case "centered":
-                labelY = y + height / 2;
-                dominantBaseline = "central";
-                break;
-            case "inside":
-            default:
-                labelY = y + height / 2;
-                dominantBaseline = "central";
-                break;
+        // For outside labels, render single-line as before
+        if (settings.labelPosition === "outside") {
+            parent.append("text")
+                .attr("class", "segment-label")
+                .attr("x", labelX)
+                .attr("y", y - 2)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "auto")
+                .attr("font-size", `${fontSize}pt`)
+                .attr("fill", settings.fontColor)
+                .attr("pointer-events", "none")
+                .attr("aria-hidden", "true")
+                .text(labelText);
+            return;
         }
 
-        const labelX = x + width / 2;
+        // Inside / centered: wrap text into lines that fit the bar width
+        const lines = this.wrapText(labelText, fontSize, maxWidth, parent);
+        if (lines.length === 0) return;
+
+        const lineHeightPx = fontSize * 1.4;
+        const totalTextHeight = lines.length * lineHeightPx;
+
+        // If wrapped text still doesn't fit the segment height, hide it
+        if (totalTextHeight > height - 2) return;
+
+        const textStartY = y + (height - totalTextHeight) / 2 + lineHeightPx * 0.7;
 
         const text = parent.append("text")
             .attr("class", "segment-label")
             .attr("x", labelX)
-            .attr("y", labelY)
             .attr("text-anchor", "middle")
-            .attr("dominant-baseline", dominantBaseline)
             .attr("font-size", `${fontSize}pt`)
             .attr("fill", settings.fontColor)
             .attr("pointer-events", "none")
-            .attr("aria-hidden", "true")
-            .text(labelText);
+            .attr("aria-hidden", "true");
 
-        // Hide label if it overflows the segment rect (inside/centered mode)
-        if (settings.labelPosition !== "outside") {
-            const bbox = (text.node() as SVGTextElement).getBBox();
-            if (bbox.width > width - 4 || bbox.height > height - 2) {
-                text.remove();
+        for (let i = 0; i < lines.length; i++) {
+            text.append("tspan")
+                .attr("x", labelX)
+                .attr("dy", i === 0 ? 0 : lineHeightPx)
+                .text(lines[i]);
+        }
+
+        text.attr("y", textStartY);
+    }
+
+    /**
+     * Word-wrap a label string into lines that fit within maxWidth pixels.
+     * Uses a temporary SVG text element for accurate measurement.
+     */
+    private wrapText(
+        text: string,
+        fontSize: number,
+        maxWidth: number,
+        parent: d3.Selection<SVGGElement, unknown, null, undefined>,
+    ): string[] {
+        if (maxWidth <= 0) return [];
+
+        // Create a hidden measurement element
+        const measure = parent.append("text")
+            .attr("font-size", `${fontSize}pt`)
+            .attr("visibility", "hidden");
+
+        const measureWidth = (s: string): number => {
+            measure.text(s);
+            return (measure.node() as SVGTextElement).getBBox().width;
+        };
+
+        // If it fits on one line, no wrapping needed
+        if (measureWidth(text) <= maxWidth) {
+            measure.remove();
+            return [text];
+        }
+
+        // Split on natural break points: spaces, pipes, parentheses
+        const tokens = text.split(/(\s+|\||\(|\))/g).filter(t => t.length > 0);
+        const lines: string[] = [];
+        let currentLine = "";
+
+        for (const token of tokens) {
+            const candidate = currentLine.length === 0 ? token : currentLine + token;
+            if (measureWidth(candidate) <= maxWidth) {
+                currentLine = candidate;
+            } else {
+                if (currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                }
+                currentLine = token.trim();
             }
         }
+        if (currentLine.trim().length > 0) {
+            lines.push(currentLine.trim());
+        }
+
+        measure.remove();
+
+        // Filter out empty lines
+        return lines.filter(l => l.length > 0);
     }
 
     /**
@@ -250,19 +311,33 @@ export class MekkoVisual implements powerbi.extensibility.visual.IVisual {
     ): void {
         const settings = this.settings.barTotals;
         const labelText = buildBarTotalLabel(bar, settings);
+        const labelX = x + barWidth / 2;
+        const maxWidth = barWidth - 4;
 
-        parent.append("text")
+        const lines = this.wrapText(labelText, settings.fontSize, maxWidth, parent as d3.Selection<SVGGElement, unknown, null, undefined>);
+        if (lines.length === 0) return;
+
+        const lineHeightPx = settings.fontSize * 1.4;
+        const baseY = chartTop - 6 - (lines.length - 1) * lineHeightPx;
+
+        const text = parent.append("text")
             .attr("class", "bar-total-label")
-            .attr("x", x + barWidth / 2)
-            .attr("y", chartTop - 6)
+            .attr("x", labelX)
+            .attr("y", baseY)
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "auto")
             .attr("font-size", `${settings.fontSize}pt`)
             .attr("font-weight", "600")
             .attr("fill", settings.fontColor)
             .attr("pointer-events", "none")
-            .attr("aria-hidden", "true")
-            .text(labelText);
+            .attr("aria-hidden", "true");
+
+        for (let i = 0; i < lines.length; i++) {
+            text.append("tspan")
+                .attr("x", labelX)
+                .attr("dy", i === 0 ? 0 : lineHeightPx)
+                .text(lines[i]);
+        }
     }
 
     /**
@@ -279,17 +354,32 @@ export class MekkoVisual implements powerbi.extensibility.visual.IVisual {
 
         for (const bar of this.model.bars) {
             const barWidth = Math.max(1, bar.barWidthFraction * availableWidth);
+            const labelX = currentX + barWidth / 2;
+            const maxWidth = barWidth - 4;
 
-            axisGroup.append("text")
+            const lines = this.wrapText(bar.categoryName, settings.fontSize, maxWidth, axisGroup as d3.Selection<SVGGElement, unknown, null, undefined>);
+            const lineHeightPx = settings.fontSize * 1.4;
+
+            const text = axisGroup.append("text")
                 .attr("class", "axis-label")
-                .attr("x", currentX + barWidth / 2)
+                .attr("x", labelX)
                 .attr("y", y + 14)
                 .attr("text-anchor", "middle")
                 .attr("dominant-baseline", "hanging")
                 .attr("font-size", `${settings.fontSize}pt`)
                 .attr("fill", settings.fontColor)
-                .attr("role", "presentation")
-                .text(bar.categoryName);
+                .attr("role", "presentation");
+
+            if (lines.length === 0) {
+                text.text(bar.categoryName);
+            } else {
+                for (let i = 0; i < lines.length; i++) {
+                    text.append("tspan")
+                        .attr("x", labelX)
+                        .attr("dy", i === 0 ? 0 : lineHeightPx)
+                        .text(lines[i]);
+                }
+            }
 
             currentX += barWidth + MekkoVisual.BAR_GAP;
         }
