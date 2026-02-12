@@ -42,6 +42,7 @@
   "Visual_Direction": "Richtung",
   "Visual_Ascending": "Aufsteigend",
   "Visual_Descending": "Absteigend",
+  "Visual_Alphabetical": "Alphabetisch",
   "Visual_Group_Legend": "Nach Kategorie gruppieren",
   "Visual_Group_Direction": "Sortierreihenfolge für Gruppe",
   "Visual_DisplayPercents": "Prozentangaben anzeigen",

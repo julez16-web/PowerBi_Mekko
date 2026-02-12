@@ -42,6 +42,7 @@
 	"Visual_Direction": "Direction",
 	"Visual_Ascending": "Ascending",
 	"Visual_Descending": "Descending",
+	"Visual_Alphabetical": "Alphabetical",
 	"Visual_Group_Legend": "Group by category",
 	"Visual_Group_Direction": "Group sort direction",
 	"Visual_DisplayPercents": "Display percents",
