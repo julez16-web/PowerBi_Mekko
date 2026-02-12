@@ -832,13 +832,15 @@ export class BaseVisualStrategy implements IVisualStrategy {
                 // Use customLabelText if available (already calculated with correct content mode)
                 if (dataPoint.customLabelText) {
                     labelText = dataPoint.customLabelText;
+                    console.log(`[LabelRender] Using customLabelText: "${labelText}", valueOriginal=${dataPoint.valueOriginal}, valueAbsolute=${dataPoint.valueAbsolute}`);
                 } else {
-                    // Fallback to default formatting
+                    // Fallback: always use valueOriginal (raw data) for amount display
+                    const rawValue = dataPoint.valueOriginal ?? dataPoint.valueAbsolute ?? 0;
                     let formatString: string = null,
-                        value: number = dataPoint.valueOriginal;
+                        value: number = rawValue;
 
                     if (settingModel.valueAxis.visualMode.value === "absolute") {
-                        value = dataPoint.valueOriginal;
+                        value = rawValue;
                     } else if (!settingModel.labels.displayUnits.value) {
                         formatString = hundredPercentFormat;
                         if (settingModel.sortSeries.displayPercents.value === "category") {
@@ -858,6 +860,7 @@ export class BaseVisualStrategy implements IVisualStrategy {
                         displayUnitValue);
 
                     labelText = formatter.format(value);
+                    console.log(`[LabelRender] Fallback path: value=${value}, valueOriginal=${dataPoint.valueOriginal}, valueAbsolute=${dataPoint.valueAbsolute}, formatted="${labelText}"`);
                 }
 
                 labelDataPoints.push({

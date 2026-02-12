@@ -344,7 +344,8 @@ export class BaseColumnChart implements IColumnChart {
         });
 
         if (settingsModel.sortSeries.enabled.value) {
-            const columns = BaseColumnChart.createAlternateStructure(result, settingsModel.sortSeries.direction.value === "des");
+            const sortDirection: string = settingsModel.sortSeries.direction.value as string;
+            const columns = BaseColumnChart.createAlternateStructure(result, sortDirection);
             BaseColumnChart.reorderPositions(result, columns, is100PercentStacked);
         }
 
@@ -380,7 +381,7 @@ export class BaseColumnChart implements IColumnChart {
         };
     }
 
-    private static createAlternateStructure(dataPoint: MekkoDataPoints, descendingDirection: boolean = true): ICategoryValuesCollection[] {
+    private static createAlternateStructure(dataPoint: MekkoDataPoints, sortDirection: string = "asc"): ICategoryValuesCollection[] {
         const series: MekkoChartSeries[] = dataPoint.series;
         const columns: ICategoryValuesCollection[] = [];
         const rowsCount: number = series.length;
@@ -414,15 +415,27 @@ export class BaseColumnChart implements IColumnChart {
             }
         }
 
-        // copy array with specific fields
+        // Sort series within each bar
         for (let col = 0; col < colsCount; col++) {
             const tmpIdentity: ISelectionId = columns[col].identity;
             const tmpCategoryValue: PrimitiveValue = columns[col].categoryValue;
             const tmpColor: string = columns[col].color;
-            columns[col] = columns[col].sort((a, b) => a[BaseColumnChart.ColumSortField] > b[BaseColumnChart.ColumSortField] ? 1 : -1);
-            if (descendingDirection) {
-                columns[col] = (columns[col]).reverse();
+
+            if (sortDirection === "alpha") {
+                // Alphabetical sort by series name — consistent order across all bars
+                columns[col] = columns[col].sort((a, b) => {
+                    const nameA = (a?.seriesName || "").toString().toLowerCase();
+                    const nameB = (b?.seriesName || "").toString().toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
+            } else {
+                // Value-based sort (ascending by default)
+                columns[col] = columns[col].sort((a, b) => a[BaseColumnChart.ColumSortField] > b[BaseColumnChart.ColumSortField] ? 1 : -1);
+                if (sortDirection === "des") {
+                    columns[col] = (columns[col]).reverse();
+                }
             }
+
             columns[col].identity = tmpIdentity;
             columns[col].categoryValue = tmpCategoryValue;
             columns[col].color = tmpColor;

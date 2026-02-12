@@ -69,7 +69,15 @@ export class LabelCalculations {
             formatString
         } = context;
 
-        const amount = dataPoint.valueAbsolute || dataPoint.value;
+        // Use valueOriginal for absolute amounts (raw data value),
+        // NOT valueAbsolute which is normalized (0..1) in 100%-stacked mode
+        const rawOriginal = dataPoint.valueOriginal;
+        const rawAbsolute = dataPoint.valueAbsolute;
+        const rawValue = dataPoint.value;
+        const amount = Math.abs(rawOriginal ?? rawAbsolute ?? rawValue ?? 0);
+
+        // Debug: trace which value source is being used for the label
+        console.log(`[LabelCalc] contentMode=${contentMode}, valueOriginal=${rawOriginal}, valueAbsolute=${rawAbsolute}, value=${rawValue}, amount=${amount}, displayUnits=${displayUnits}, format=${formatString}`);
         const percentTotal = grandTotal > 0 ? (amount / grandTotal) * 100 : 0;
         const percentBar = barTotal > 0 ? (amount / barTotal) * 100 : 0;
 

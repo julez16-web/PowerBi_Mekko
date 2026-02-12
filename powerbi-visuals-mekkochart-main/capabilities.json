@@ -338,6 +338,11 @@
                                 "value": "des",
                                 "displayName": "Descending",
                                 "displayNameKey": "Visual_Descending"
+                            },
+                            {
+                                "value": "alpha",
+                                "displayName": "Alphabetical",
+                                "displayNameKey": "Visual_Alphabetical"
                             }
                         ]
                     }
