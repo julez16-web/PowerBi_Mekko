@@ -5,8 +5,8 @@
     "moduleResolution": "node",
     "lib": ["ES2020", "DOM"],
     "outDir": "./.tmp/build/",
-    "rootDir": "./src/",
-    "strict": true,
+    "rootDir": "./",
+    "strict": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
@@ -16,6 +16,9 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
+  "files": [
+    "src/visual.ts"
+  ],
   "include": [
     "src/**/*.ts"
   ],

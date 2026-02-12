@@ -114,7 +114,7 @@ export function convertDataView(
                 try {
                     selectionId = host.createSelectionIdBuilder()
                         .withMatrixNode(rowNode, matrix.rows.levels)
-                        .createSelectionId();
+                        .createSelectionId() as powerbi.visuals.ISelectionId;
                 } catch {
                     // Selection ID creation may fail in some contexts
                 }

@@ -4,15 +4,15 @@
     "displayName": "Mekko / Marimekko Chart",
     "guid": "MekkoChart_1A2B3C4D5E6F",
     "visualClassName": "MekkoVisual",
-    "version": "1.0.0",
+    "version": "1.0.0.0",
     "description": "A Marimekko (Mekko) chart with 100%-stacked bars, variable-width columns, configurable labels (absolute amounts, percentages, category labels), and bar totals. Microsoft AppSource & certification ready.",
-    "supportUrl": "",
-    "gitHubUrl": ""
+    "supportUrl": "https://github.com/julez16-web/PowerBi_Mekko",
+    "gitHubUrl": "https://github.com/julez16-web/PowerBi_Mekko"
   },
   "apiVersion": "5.11.0",
   "author": {
-    "name": "",
-    "email": ""
+    "name": "julez16-web",
+    "email": "julez16-web@users.noreply.github.com"
   },
   "assets": {
     "icon": "assets/icon.png"
