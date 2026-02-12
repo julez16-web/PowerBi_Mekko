@@ -4,3 +4,4 @@ dist/
 *.pbiviz
 .DS_Store
 Thumbs.db
+webpack.statistics.*.html
