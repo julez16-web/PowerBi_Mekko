@@ -446,7 +446,7 @@ export class CategoryAxisSettings extends FormattingSettingsSimpleCard {
     public showBarTotals = new formattingSettings.ToggleSwitch({
         name: "showBarTotals",
         displayNameKey: "Visual_ShowBarTotals",
-        value: false
+        value: true
     });
 
     public labelColor = new formattingSettings.ColorPicker({

@@ -111,5 +111,13 @@
 	"Visual_Y_Axis": "Visual Y axis",
 	"Visual_X_Axis": "Visual X axis",
 	"Visual_LegendName": "Visual legend Name",
-	"Visual_Y_Axis_Tick_Text": "Visual Y axis tick"
+	"Visual_Y_Axis_Tick_Text": "Visual Y axis tick",
+	"Visual_ShowBarTotals": "Show bar totals",
+	"Visual_AutoHide_Small_Segments": "Auto-hide small segments",
+	"Visual_MinSegment_Threshold": "Min segment threshold",
+	"Visual_ContentMode": "Content mode",
+	"Visual_EnableTopN": "Enable Top-N",
+	"Visual_TopN_Count": "Top N count",
+	"Visual_ShowOtherCategory": "Show other category",
+	"Visual_OtherLabel": "Other category label"
 }

@@ -73,6 +73,7 @@ import {
     Selection,
     MekkoColumnAxisOptions,
     RectDataPoint,
+    MekkoChartColumnDataPoint,
 } from "./dataInterfaces";
 
 import {
@@ -1873,6 +1874,9 @@ export class MekkoChart implements IVisual {
                 hideCollidedLabels: !forceDisplay
             });
 
+            // Render bar total labels above each column
+            this.renderBarTotalLabels(dataPoints as MekkoChartColumnDataPoint[]);
+
             this.applyOnObjectStylesToLabels(isFormatMode);
             this.applyOnObjectStylesToAxisTickText(this.y1AxisGraphicsContext, isFormatMode);
             this.applyOnObjectStylesToAxis(this.axisGraphicsContext, isFormatMode, MekkoChartObjectNames.XAxis, this.localizationManager.getDisplayName("Visual_X_Axis"));
@@ -1910,6 +1914,143 @@ export class MekkoChart implements IVisual {
             .attr(SubSelectableObjectNameAttribute, MekkoChartObjectNames.Labels)
             .attr(SubSelectableTypeAttribute, SubSelectionStylesType.NumericText)
             .attr(SubSelectableDisplayNameAttribute, this.localizationManager.getDisplayName("Visual_Data_Labels"));
+    }
+
+    private renderBarTotalLabels(dataPoints: MekkoChartColumnDataPoint[]): void {
+        // Remove previous total labels
+        this.labelGraphicsContextScrollable.selectAll(".bar-total-label").remove();
+
+        if (!this.settingsModel.categoryAxis.showBarTotals.value) {
+            return;
+        }
+
+        if (!dataPoints || dataPoints.length === 0) {
+            return;
+        }
+
+        // Group data points by categoryIndex and compute totals + positions
+        const columnMap = new Map<number, { total: number; left: number; width: number; minTop: number }>();
+
+        for (const dp of dataPoints) {
+            const catIdx = dp.categoryIndex;
+            const existing = columnMap.get(catIdx);
+            const rawVal = Math.abs(dp.valueOriginal ?? dp.valueAbsolute ?? 0);
+
+            if (!existing) {
+                columnMap.set(catIdx, {
+                    total: rawVal,
+                    left: dp.originalPosition,
+                    width: dp.categoryValue,
+                    minTop: Infinity,
+                });
+            } else {
+                existing.total += rawVal;
+            }
+        }
+
+        // We need the layout to compute y positions for each data point
+        // Find the minimum y (top of column) for each category
+        const layers = this.layers;
+        if (layers && layers.length > 0) {
+            for (const dp of dataPoints) {
+                const entry = columnMap.get(dp.categoryIndex);
+                if (entry) {
+                    // position represents the stacked cumulative value, we need actual pixel y
+                    // Use the shapeLayout from the render result if available
+                }
+            }
+        }
+
+        // Use the label data points' parentRect to find top positions
+        // Instead, iterate all data points and find the actual rendered top y
+        // by looking at the label graphics shapes (columns)
+        const shapeEntries = this.labelGraphicsContextScrollable.node()?.parentNode;
+        if (!shapeEntries) return;
+
+        // Get y-scale to convert data positions to pixel positions
+        // Alternative: find the topmost segment rect per column from the resultsLabelDataPoints
+        // We can use the mainGraphicsContext rects
+        const allRects = this.axisGraphicsContextScrollable
+            ?.node()?.parentNode;
+
+        // Get column positions from the SVG rect elements
+        const rectElements = this.svg.selectAll("rect.column");
+
+        // Build column top positions from rendered rectangles
+        const columnTopMap = new Map<number, { x: number; width: number; topY: number }>();
+
+        if (rectElements && !rectElements.empty()) {
+            rectElements.each(function () {
+                const rect = select(this);
+                const d = rect.datum() as MekkoChartColumnDataPoint;
+                if (d && d.categoryIndex !== undefined) {
+                    const y = parseFloat(rect.attr("y")) || 0;
+                    const x = parseFloat(rect.attr("x")) || 0;
+                    const w = parseFloat(rect.attr("width")) || 0;
+                    const existing = columnTopMap.get(d.categoryIndex);
+                    if (!existing || y < existing.topY) {
+                        columnTopMap.set(d.categoryIndex, {
+                            x: existing ? existing.x : x,
+                            width: existing ? existing.width : w,
+                            topY: y,
+                        });
+                    }
+                    // Keep consistent x/width from any entry
+                    if (existing) {
+                        existing.topY = Math.min(existing.topY, y);
+                    }
+                }
+            });
+        }
+
+        if (columnTopMap.size === 0) {
+            return;
+        }
+
+        // Format totals
+        const displayUnits = +this.settingsModel.labels.displayUnits.value;
+        const precision = this.settingsModel.labels.labelPrecision.value;
+        const formatter = valueFormatter.create({
+            value: displayUnits || 0,
+            precision: precision,
+        });
+
+        const labelColor = this.settingsModel.categoryAxis.labelColor.value.value;
+        const fontFamily = this.settingsModel.categoryAxis.fontControl.fontFamily.value;
+        const fontSize = this.settingsModel.categoryAxis.fontControl.fontSize.value;
+        const fontBold = this.settingsModel.categoryAxis.fontControl.bold.value;
+
+        const totalLabelsData: { x: number; y: number; text: string }[] = [];
+
+        columnMap.forEach((colData, catIdx) => {
+            const posInfo = columnTopMap.get(catIdx);
+            if (!posInfo) return;
+
+            const formattedTotal = formatter.format(colData.total);
+            totalLabelsData.push({
+                x: posInfo.x + posInfo.width / 2,
+                y: posInfo.topY - 4,
+                text: formattedTotal,
+            });
+        });
+
+        // Render total labels
+        const totalLabels = this.labelGraphicsContextScrollable
+            .selectAll(".bar-total-label")
+            .data(totalLabelsData);
+
+        totalLabels.enter()
+            .append("text")
+            .classed("bar-total-label", true)
+            .attr("x", d => d.x)
+            .attr("y", d => d.y)
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "auto")
+            .style("fill", labelColor)
+            .style("font-family", fontFamily)
+            .style("font-size", fontSize + "px")
+            .style("font-weight", fontBold ? "bold" : "normal")
+            .text(d => d.text);
     }
 
     private getLabelLayout(forceDisplay: boolean = false): ILabelLayout {
