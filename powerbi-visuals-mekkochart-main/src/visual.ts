@@ -1310,6 +1310,12 @@ export class MekkoChart implements IVisual {
 
         // reset defaults
         margin.top = parseFloat(y1AxisTextProperties.fontSize) / MekkoChart.MarginTopFactor;
+
+        // Add extra top margin for bar total labels
+        if (this.settingsModel.categoryAxis.showBarTotals.value) {
+            const totalFontSize = this.settingsModel.categoryAxis.fontControl.fontSize.value || 12;
+            margin.top += totalFontSize + 8;
+        }
         margin.bottom = MekkoChart.MinBottomMargin;
         margin.right = 0;
 
