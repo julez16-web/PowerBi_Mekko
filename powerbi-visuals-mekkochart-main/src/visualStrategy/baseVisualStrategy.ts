@@ -863,10 +863,15 @@ export class BaseVisualStrategy implements IVisualStrategy {
                     console.log(`[LabelRender] Fallback path: value=${value}, valueOriginal=${dataPoint.valueOriginal}, valueAbsolute=${dataPoint.valueAbsolute}, formatted="${labelText}"`);
                 }
 
+                // Auto-contrast: choose dark or light text based on segment background color
+                const segColor = dataPoint.color || "#ffffff";
+                const autoFillColor = this.getContrastingLabelColor(segColor);
+
                 labelDataPoints.push({
                     parentRect,
                     text: labelText,
-                    fillColor: settingModel.labels.color.value.value,
+                    fillColor: autoFillColor,
+                    segmentColor: segColor,
                     fontFamily: settingModel.labels.fontControl.fontFamily.value,
                     fontSize: settingModel.labels.fontControl.fontSize.value,
                     bold: settingModel.labels.fontControl.bold.value,
@@ -877,5 +882,22 @@ export class BaseVisualStrategy implements IVisualStrategy {
         }
 
         return labelDataPoints;
+    }
+
+    /**
+     * Returns black or white text color based on the perceived luminance of the background color.
+     * Light backgrounds get dark text, dark backgrounds get light text.
+     */
+    private getContrastingLabelColor(hexColor: string): string {
+        let hex = hexColor.replace("#", "");
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        // W3C relative luminance formula
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.5 ? "#000000" : "#ffffff";
     }
 }

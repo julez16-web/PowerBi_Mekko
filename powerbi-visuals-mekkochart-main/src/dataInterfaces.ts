@@ -266,6 +266,7 @@ export interface LabelDataPoint {
     size?: ISize;
     text: string;
     fillColor: string;
+    segmentColor?: string;
     fontFamily: string;
     fontSize: number;
     bold: boolean;

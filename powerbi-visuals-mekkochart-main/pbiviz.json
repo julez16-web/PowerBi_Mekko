@@ -4,7 +4,7 @@
     "displayName": "Mekko Chart Custom",
     "guid": "MekkoChartCustom1000",
     "visualClassName": "MekkoChart",
-    "version": "1.0.0.0",
+    "version": "1.1.0.0",
     "description": "Enhanced Mekko chart with dynamic labeling, Top-N filtering, and advanced sorting. Features flexible label content modes, automatic segment hiding, category aggregation, and configurable axes for optimal data visualization.",
     "supportUrl": "http://community.powerbi.com",
     "gitHubUrl": "https://github.com/Microsoft/powerbi-visuals-mekkochart"
